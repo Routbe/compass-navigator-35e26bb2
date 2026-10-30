@@ -1436,7 +1436,7 @@
         "CREATE INDEX account_merge_tickets_primary_idx ON public.account_merge_tickets USING btree (primary_user_id)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -1594,7 +1594,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -2002,7 +2002,7 @@
         "CREATE INDEX altcha_used_expires_idx ON public.altcha_used USING btree (expires_at)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -2065,7 +2065,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -3145,9 +3145,20 @@
         "CREATE INDEX badge_claim_links_badge_idx ON public.badge_claim_links USING btree (badge_id)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "rout_scope",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "ALL",
+          "using": "(created_by = rout_current_user_id())",
+          "check": "(created_by = rout_current_user_id())"
+        }
+      ],
       "grants": {
         "rout_app": [
           "DELETE",
@@ -4601,7 +4612,7 @@
         "CREATE INDEX calendar_events_window ON public.calendar_events USING btree (calendar_id, start_utc)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -5154,9 +5165,20 @@
         "CREATE INDEX creator_donations_session_idx ON public.creator_donations USING btree (session_id)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "rout_scope",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "ALL",
+          "using": "(creator_id = rout_current_user_id())",
+          "check": "(creator_id = rout_current_user_id())"
+        }
+      ],
       "grants": {
         "rout_app": [
           "DELETE",
@@ -5225,7 +5247,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -5275,7 +5297,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -5641,7 +5663,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -5994,7 +6016,7 @@
         "CREATE UNIQUE INDEX entitlement_overrides_scope_key_uidx ON public.entitlement_overrides USING btree (scope_type, scope_id, entitlement_key)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -6078,7 +6100,7 @@
         "CREATE INDEX fediverse_email_otp_expires_idx ON public.fediverse_email_otp USING btree (expires_at)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -6665,7 +6687,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -7711,7 +7733,7 @@
         "CREATE INDEX login_codes_lookup_idx ON public.login_codes USING btree (email_hash, code_hash)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -8333,7 +8355,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -8425,7 +8447,7 @@
         "CREATE INDEX oauth_client_verification_requests_client_idx ON public.oauth_client_verification_requests USING btree (client_id, created_at DESC)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -8875,7 +8897,7 @@
         "CREATE INDEX oauth_debug_events_client_created_idx ON public.oauth_debug_events USING btree (client_id, created_at DESC)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -9149,7 +9171,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -9299,7 +9321,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -9656,7 +9678,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -10071,7 +10093,7 @@
         "CREATE INDEX profile_link_clicks_user_time_idx ON public.profile_link_clicks USING btree (profile_user_id, created_at DESC)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -11619,7 +11641,7 @@
         "CREATE INDEX qr_scans_qr_recent_idx ON public.qr_scans USING btree (tracked_qr_id, scanned_at DESC)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -11671,7 +11693,7 @@
         "CREATE INDEX rate_limits_window_idx ON public.rate_limits USING btree (window_start)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -11752,7 +11774,7 @@
         "CREATE INDEX referrals_inviter_idx ON public.referrals USING btree (inviter_id)"
       ],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -12802,9 +12824,20 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "rout_scope",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "ALL",
+          "using": "(profile_id = rout_current_user_id())",
+          "check": "(profile_id = rout_current_user_id())"
+        }
+      ],
       "grants": {
         "rout_app": [
           "DELETE",
@@ -13268,7 +13301,7 @@
       ],
       "indexes": [],
       "triggers": [],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
       "policies": [],
       "grants": {
@@ -15935,9 +15968,20 @@
       "triggers": [
         "CREATE TRIGGER on_user_created AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()"
       ],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "rout_scope",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "ALL",
+          "using": "(id = rout_current_user_id())",
+          "check": "(id = rout_current_user_id())"
+        }
+      ],
       "grants": {
         "rout_app": [
           "DELETE",
@@ -17048,9 +17092,20 @@
       "triggers": [
         "CREATE TRIGGER workspaces_slug_suffix BEFORE INSERT OR UPDATE OF slug, plan ON public.workspaces FOR EACH ROW EXECUTE FUNCTION enforce_workspace_slug_suffix()"
       ],
-      "rls": false,
+      "rls": true,
       "forceRls": false,
-      "policies": [],
+      "policies": [
+        {
+          "name": "rout_scope",
+          "permissive": true,
+          "roles": [
+            "public"
+          ],
+          "cmd": "ALL",
+          "using": "rout_is_workspace_member(id)",
+          "check": "rout_is_workspace_member(id)"
+        }
+      ],
       "grants": {
         "rout_app": [
           "DELETE",

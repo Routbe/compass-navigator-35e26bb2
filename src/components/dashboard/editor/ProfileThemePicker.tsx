@@ -1,3 +1,4 @@
+import { ScopedThemeBar } from "@/components/dashboard/editor/ScopedThemeBar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -251,6 +252,7 @@ export function ProfileThemePicker({
           </div>
           <div className="border-t border-border pt-4">
             <DesignButtonsTypographySection prefs={prefs} setPref={setPref} theme={theme} inlineControls />
+            <ScopedThemeBar prefs={prefs} setPref={setPref} />
           </div>
         </AccordionContent>
       </AccordionItem>

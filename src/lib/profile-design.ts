@@ -1,3 +1,13 @@
+import {
+  DEFAULT_GLASS,
+  DEFAULT_GLASS_TARGETS,
+  normalizeGlassTargets,
+  normalizeGlassTokens,
+  normalizeThemeOverrides,
+  type GlassTargets,
+  type GlassTokens,
+  type ThemeOverrides,
+} from "@/lib/theme-engine";
 import { EXTRA_FOOTER_STYLES, extraFooterCss, type ExtraFooterStyle } from "@/lib/footer-styles-extra";
 /**
  * ROUT Design Studio — thema-presets, wallpapers, knopstijlen, typografie en
@@ -103,6 +113,14 @@ export interface ProfileDesignPrefs {
   /** "Powered by ROUT"-badge tonen (Pro-leden mogen dit uitzetten). */
   showRoutBadge: boolean;
   socialPosition: SocialPosition;
+  /** Global glass tokens (theme.global) — see theme-engine.ts. */
+  glassStyle: GlassTokens["glassStyle"];
+  glassOpacity: number;
+  glassBlur: number;
+  glassBorder: GlassTokens["glassBorder"];
+  glassTargets: GlassTargets;
+  /** Per-component overrides (theme.overrides[scope]). */
+  themeOverrides: ThemeOverrides;
 }
 
 export const FOOTER_STYLES: { id: FooterStyle; label: string; hint: string }[] = [
@@ -266,6 +284,9 @@ export const DEFAULT_DESIGN_PREFS: ProfileDesignPrefs = {
   footerAccent: null,
   showRoutBadge: true,
   socialPosition: "top",
+  ...DEFAULT_GLASS,
+  glassTargets: DEFAULT_GLASS_TARGETS,
+  themeOverrides: {},
 };
 
 
@@ -904,6 +925,9 @@ export function normalizeDesignPrefs(r: Record<string, unknown>): ProfileDesignP
     footerAccent: hex(r["footerAccent"]),
     showRoutBadge: r["showRoutBadge"] === undefined ? true : Boolean(r["showRoutBadge"]),
     socialPosition: pick(r["socialPosition"], ["top", "bottom", "footer"] as const, "top"),
+    ...normalizeGlassTokens(r),
+    glassTargets: normalizeGlassTargets(r["glassTargets"]),
+    themeOverrides: normalizeThemeOverrides(r["themeOverrides"]),
 
   };
 }

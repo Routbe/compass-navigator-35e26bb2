@@ -1006,3 +1006,10 @@ select:focus-visible {
   box-shadow: 2px 3px 0 #141414;
 }
 [data-profile-theme="biophilic"] section { border-radius: 1.75rem !important; }
+
+/* Glass surfaces from the theme engine: opaque fallback without backdrop-filter. */
+@supports not (backdrop-filter: blur(1px)) {
+  [style*="backdrop-filter"] {
+    background: rgba(18, 18, 22, 0.88) !important;
+  }
+}

@@ -78,6 +78,8 @@ export function ScopedThemeBar({ prefs, setPref }: { prefs: ProfileDisplayPrefs;
               Herstel naar standaard
             </Button>
           </div>
+        ) : scope !== "all" ? (
+          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Volgt standaard</span>
         ) : null}
       </div>
       <div role="tablist" aria-label="Doelonderdeel" className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">

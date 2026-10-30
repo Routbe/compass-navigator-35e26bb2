@@ -90,6 +90,14 @@ export function resolveScopedTokens(global: GlassTokens, overrides: ThemeOverrid
   return scope === "all" ? global : { ...global, ...(overrides[scope] ?? {}) };
 }
 
+/** Effective style for one component type: its override merged over the global defaults. */
+export function getEffectiveComponentStyle(
+  theme: { global: GlassTokens; overrides: ThemeOverrides },
+  componentType: ThemeScope,
+): GlassTokens {
+  return resolveScopedTokens(theme.global, theme.overrides, componentType);
+}
+
 /** True when a component scope deviates from the global style. */
 export function hasUniqueStyle(global: GlassTokens, overrides: ThemeOverrides, scope: ThemeScope): boolean {
   if (scope === "all") return false;

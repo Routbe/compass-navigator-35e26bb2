@@ -1277,6 +1277,28 @@ export interface PublicSavedQrsRow {
   "updated_at": string | Date;
 }
 
+export interface PublicSecurityAuditCheckpointsRow {
+  "day": string | Date;
+  "last_id": string;
+  "last_hash": string;
+  "row_count": string;
+  "signature": string;
+  "created_at": string | Date;
+}
+
+export interface PublicSecurityAuditLogsRow {
+  "id": string;
+  "event_type": string;
+  "user_id": string | null;
+  "actor_id": string | null;
+  "ip_hash": string | null;
+  "user_agent_hash": string | null;
+  "payload_json": JsonValue;
+  "prev_hash": string;
+  "current_hash": string;
+  "created_at": string | Date;
+}
+
 export interface PublicSecurityCodesRow {
   "id": string;
   "user_id": string;
@@ -1904,6 +1926,8 @@ export interface DbTables {
   "public.reserved_brands": PublicReservedBrandsRow;
   "public.reserved_handles": PublicReservedHandlesRow;
   "public.saved_qrs": PublicSavedQrsRow;
+  "public.security_audit_checkpoints": PublicSecurityAuditCheckpointsRow;
+  "public.security_audit_logs": PublicSecurityAuditLogsRow;
   "public.security_codes": PublicSecurityCodesRow;
   "public.security_events": PublicSecurityEventsRow;
   "public.sepa_review_queue": PublicSepaReviewQueueRow;

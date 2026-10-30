@@ -91,6 +91,18 @@
           "USAGE"
         ]
       }
+    },
+    {
+      "schema": "public",
+      "name": "security_audit_logs_id_seq",
+      "type": "bigint",
+      "start": "1",
+      "increment": "1",
+      "min": "1",
+      "max": "9223372036854775807",
+      "cycle": false,
+      "ownedBy": "public.security_audit_logs.id",
+      "grants": {}
     }
   ],
   "tables": [
@@ -12127,6 +12139,192 @@
     },
     {
       "schema": "public",
+      "name": "security_audit_checkpoints",
+      "columns": [
+        {
+          "name": "day",
+          "type": "date",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "last_id",
+          "type": "bigint",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "last_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "row_count",
+          "type": "bigint",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "signature",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "security_audit_checkpoints_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (day)"
+        }
+      ],
+      "indexes": [],
+      "triggers": [
+        "CREATE TRIGGER security_checkpoint_no_change BEFORE DELETE OR UPDATE ON public.security_audit_checkpoints FOR EACH ROW EXECUTE FUNCTION security_audit_refuse()",
+        "CREATE TRIGGER security_checkpoint_no_truncate BEFORE TRUNCATE ON public.security_audit_checkpoints FOR EACH STATEMENT EXECUTE FUNCTION security_audit_refuse()"
+      ],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
+      "name": "security_audit_logs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "notNull": true,
+          "default": "nextval('security_audit_logs_id_seq'::regclass)",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "event_type",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "user_id",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "actor_id",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "ip_hash",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "user_agent_hash",
+          "type": "text",
+          "notNull": false,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "payload_json",
+          "type": "jsonb",
+          "notNull": true,
+          "default": "'{}'::jsonb",
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "prev_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "current_hash",
+          "type": "text",
+          "notNull": true,
+          "default": null,
+          "identity": null,
+          "generated": null
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "default": "now()",
+          "identity": null,
+          "generated": null
+        }
+      ],
+      "constraints": [
+        {
+          "name": "security_audit_logs_current_hash_key",
+          "kind": "u",
+          "def": "UNIQUE (current_hash)"
+        },
+        {
+          "name": "security_audit_logs_event_type_check",
+          "kind": "c",
+          "def": "CHECK (((char_length(event_type) >= 1) AND (char_length(event_type) <= 80)))"
+        },
+        {
+          "name": "security_audit_logs_pkey",
+          "kind": "p",
+          "def": "PRIMARY KEY (id)"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX security_audit_logs_created_idx ON public.security_audit_logs USING btree (created_at)",
+        "CREATE INDEX security_audit_logs_user_idx ON public.security_audit_logs USING btree (user_id, created_at DESC)"
+      ],
+      "triggers": [
+        "CREATE TRIGGER security_audit_chain BEFORE INSERT ON public.security_audit_logs FOR EACH ROW EXECUTE FUNCTION security_audit_chain()",
+        "CREATE TRIGGER security_audit_no_truncate BEFORE TRUNCATE ON public.security_audit_logs FOR EACH STATEMENT EXECUTE FUNCTION security_audit_refuse()",
+        "CREATE TRIGGER security_audit_no_update BEFORE DELETE OR UPDATE ON public.security_audit_logs FOR EACH ROW EXECUTE FUNCTION security_audit_refuse()"
+      ],
+      "rls": true,
+      "forceRls": false,
+      "policies": [],
+      "grants": {}
+    },
+    {
+      "schema": "public",
       "name": "security_codes",
       "columns": [
         {
@@ -17495,6 +17693,18 @@
       "name": "save_profile_draft",
       "args": "p_user_id uuid, p_space text, p_payload jsonb, p_expected_revision bigint",
       "def": "CREATE OR REPLACE FUNCTION public.save_profile_draft(p_user_id uuid, p_space text, p_payload jsonb, p_expected_revision bigint)\n RETURNS TABLE(revision bigint, published_revision bigint)\n LANGUAGE plpgsql\n SET search_path TO 'public'\nAS $function$\ndeclare\n  v_current bigint;\nbegin\n  if p_space not in ('verified', 'alias') then\n    raise exception 'draft_space_invalid';\n  end if;\n\n  select d.revision into v_current\n    from public.profile_drafts d\n   where d.user_id = p_user_id and d.space = p_space\n   for update;\n\n  if v_current is null then\n    if p_expected_revision <> 0 then raise exception 'draft_conflict'; end if;\n    insert into public.profile_drafts (user_id, space, payload, revision)\n    values (p_user_id, p_space, p_payload, 1);\n  else\n    if v_current <> p_expected_revision then raise exception 'draft_conflict'; end if;\n    update public.profile_drafts d\n       set payload = p_payload, revision = d.revision + 1, updated_at = now()\n     where d.user_id = p_user_id and d.space = p_space;\n  end if;\n\n  return query\n    select d.revision, d.published_revision\n      from public.profile_drafts d\n     where d.user_id = p_user_id and d.space = p_space;\nend;\n$function$"
+    },
+    {
+      "schema": "public",
+      "name": "security_audit_chain",
+      "args": "",
+      "def": "CREATE OR REPLACE FUNCTION public.security_audit_chain()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\ndeclare\n  prev text;\nbegin\n  perform pg_advisory_xact_lock(727001);\n  select current_hash into prev from public.security_audit_logs order by id desc limit 1;\n  if prev is null then\n    select last_hash into prev from public.security_audit_checkpoints order by day desc limit 1;\n  end if;\n  new.prev_hash := coalesce(prev, repeat('0', 64));\n  new.created_at := date_trunc('milliseconds', coalesce(new.created_at, now()));\n  new.current_hash := encode(sha256(convert_to(\n    new.prev_hash || '|' || new.event_type || '|' || coalesce(new.user_id, '') || '|' ||\n    coalesce(new.actor_id, '') || '|' || new.payload_json::text || '|' ||\n    to_char(new.created_at at time zone 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"'),\n    'UTF8')), 'hex');\n  return new;\nend $function$"
+    },
+    {
+      "schema": "public",
+      "name": "security_audit_refuse",
+      "args": "",
+      "def": "CREATE OR REPLACE FUNCTION public.security_audit_refuse()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  if tg_op = 'DELETE'\n     and tg_table_name = 'security_audit_logs'\n     and current_setting('rout.audit_retention', true) = 'on'\n     and old.created_at < now() - interval '365 days' then\n    return old;\n  end if;\n  raise exception 'security audit tables are append-only (% refused)', tg_op;\nend $function$"
     },
     {
       "schema": "public",

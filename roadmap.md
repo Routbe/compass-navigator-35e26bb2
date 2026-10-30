@@ -69,3 +69,4 @@
 - [x] password_hash: code op Better Auth, db/0124 drop-migratie geschreven
 - [ ] db/0124 op Neon uitvoeren, CREATE intrekken, NOBYPASSRLS voor rout_app — wacht op databaseverbinding in dit project
 - [ ] Signing keys verzegelen op Vercel — wacht op ROUT_PROVIDER_SIGNING_KEK in productie
+- [ ] Mobiele Studio-kop compact (<120px): profielkeuze als pill, URL/Profiel-knop verbergen, Verwerpen als prullenbak met bevestiging, één knoppenrij

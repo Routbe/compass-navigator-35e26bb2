@@ -43,12 +43,11 @@ export const optionalAuth = createMiddleware({ type: "function" }).server(async 
         email_verified: Boolean(user.emailConfirmedAt),
       }
     : null;
-  if (!user) return next({ context: { userId: null, user, claims, db } });
+  const run = () => next({ context: { userId: user?.id ?? null, user, claims, db } });
+  if (!user) return run();
   const { withDbContext } = await import("@/lib/neon");
   const workspaceId = await activeWorkspaceCookie();
-  return withDbContext({ userId: user.id, workspaceId }, () =>
-    next({ context: { userId: user.id, user, claims, db } }),
-  );
+  return withDbContext({ userId: user.id, workspaceId }, run);
 });
 
 /** Informational only: RLS policies never trust it, membership is always checked. */

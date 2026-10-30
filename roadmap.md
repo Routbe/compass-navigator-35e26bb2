@@ -72,3 +72,9 @@
 - [ ] NOBYPASSRLS — wacht op per-request rout.user_id in neon.ts + RLS op users/workspaces e.a. (29 tabellen)
 - [ ] Signing keys verzegelen op Vercel — wacht op ROUT_PROVIDER_SIGNING_KEK in productie
 - [x] Mobiele Studio-kop compact (<120px): profielkeuze als pill, URL/Profiel-knop verbergen, Verwerpen als prullenbak met bevestiging, één knoppenrij
+- [ ] RLS-context: rout.user_id/rout.workspace_id per verzoek via neon.ts
+- [ ] db/0126 RLS-regels voor de 29 tabellen zonder RLS
+- [ ] Script om NOBYPASSRLS pas na geslaagde test te zetten
+- [ ] Signing keys: verzegeling/kid-weigering/levenscyclus controleren
+- [ ] Vormgeving: scope-balk (Alle/Links/Boekingen/Prikbord/Live-status/Socials) met overrides + herstel
+- [ ] Vormgeving: glasstijlen (solide, frosted, obsidian, prism) + sliders + toepassen-op + fallback

@@ -538,5 +538,6 @@
   "booking.done.cancelled": "Deze afspraak is geannuleerd of verlopen.",
   "booking.done.ics": "Zet in mijn agenda (.ics)",
   "booking.widget.showSlots": "Toon de eerstvolgende 3 vrije tijden",
-  "studio.nav.booking": "Boekingen"
+  "studio.nav.booking": "Boekingen",
+  "studio.editor.discardConfirm": "Alle niet-gepubliceerde wijzigingen verwerpen?"
 }

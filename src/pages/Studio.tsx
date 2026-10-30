@@ -88,18 +88,18 @@ export default function Studio() {
       ) : (
         <div className="relative flex flex-1 flex-col space-y-6 pb-8">
           <FirstUseTour area="studio" userId={user.id} />
-          <div data-tour="studio-pages" className="!mt-0 flex flex-wrap gap-2 bg-transparent p-1 pr-7">
+          <div data-tour="studio-pages" className="!mt-0 flex flex-nowrap gap-1 rounded-full bg-transparent p-0.5 pr-7 md:flex-wrap md:gap-2 md:p-1">
             {tabs.map(({ id, label, hint, Icon, locked }) => {
               const selected = variant === id;
               const select = () => { setVariant(id); setPageMode("profile"); };
-              const trigger = <Button variant="ghost" type="button" aria-pressed={selected} onClick={select} className={`h-auto min-h-12 min-w-0 flex-1 justify-start gap-2 whitespace-normal rounded-lg px-3 py-2 text-left shadow-none ${selected ? "bg-foreground text-background hover:bg-foreground hover:text-background" : "bg-transparent text-muted-foreground hover:bg-secondary/60 hover:text-foreground"}`}>
+              const trigger = <Button variant="ghost" type="button" aria-pressed={selected} onClick={select} className={`h-9 min-w-0 flex-1 md:h-auto md:min-h-12 justify-start gap-2 whitespace-normal rounded-lg px-3 py-2 text-left shadow-none ${selected ? "bg-foreground text-background hover:bg-foreground hover:text-background" : "bg-transparent text-muted-foreground hover:bg-secondary/60 hover:text-foreground"}`}>
                 <Icon className="size-4 shrink-0" />
-                <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{label}</span><span className="block break-all font-mono text-xs opacity-70">{selected && pages.handle ? `rout.be/${id === "alias" ? "u/" : ""}${pages.handle}` : hint}</span></span>
+                <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{label}</span><span className="hidden break-all font-mono text-xs opacity-70 md:block">{selected && pages.handle ? `rout.be/${id === "alias" ? "u/" : ""}${pages.handle}` : hint}</span></span>
                 {locked && <Lock className="size-3.5 shrink-0" aria-label={t("studio.common.locked")} />}
               </Button>;
               if (!selected || id !== "verified") return <div key={id} className="flex min-w-0 flex-1">{trigger}</div>;
-              return <DropdownMenu key={id}><DropdownMenuTrigger asChild><Button variant="ghost" aria-label={t("studio.mode.pages")} className="h-auto min-h-12 min-w-0 flex-1 justify-start gap-2 whitespace-normal rounded-lg bg-foreground px-3 py-2 text-left text-background hover:bg-foreground hover:text-background">
-                {(() => { const M = modeIcon(pageMode, Icon); return <M className="size-4 shrink-0" />; })()}<span className="min-w-0 flex-1"><span className="block text-sm font-medium">{modeLabel(pageMode, label)}</span><span className="block break-all font-mono text-xs opacity-70">rout.be/{pages.handle}{modeSuffix(pageMode)}</span></span><ChevronDown className="size-4 shrink-0" />
+              return <DropdownMenu key={id}><DropdownMenuTrigger asChild><Button variant="ghost" aria-label={t("studio.mode.pages")} className="h-9 min-w-0 flex-1 md:h-auto md:min-h-12 justify-start gap-2 whitespace-normal rounded-lg bg-foreground px-3 py-2 text-left text-background hover:bg-foreground hover:text-background">
+                {(() => { const M = modeIcon(pageMode, Icon); return <M className="size-4 shrink-0" />; })()}<span className="min-w-0 flex-1"><span className="block text-sm font-medium">{modeLabel(pageMode, label)}</span><span className="hidden break-all font-mono text-xs opacity-70 md:block">rout.be/{pages.handle}{modeSuffix(pageMode)}</span></span><ChevronDown className="size-4 shrink-0" />
               </Button></DropdownMenuTrigger><DropdownMenuContent align="start" className="w-72 max-w-[calc(100vw-24px)]">
                 {(["profile", "tip", "booking"] as const).filter(mode => mode !== "tip" || pages.tipEnabled).map(mode => { const M = modeIcon(mode, BadgeCheck); return <DropdownMenuItem key={mode} onSelect={() => setPageMode(mode)}><M className="size-4" /><span className="flex-1">{modeLabel(mode, t("studio.mode.profile"))}</span>{pageMode === mode && <Check className="size-4" />}</DropdownMenuItem>; })}
               </DropdownMenuContent></DropdownMenu>;

@@ -62,7 +62,8 @@ import { FileUploadInput } from "@/components/FileUploadInput";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useEditorHistory } from "@/hooks/useEditorHistory";
-import { Undo2, Redo2 } from "lucide-react";
+import { Undo2, Redo2, Trash2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useUrlStyle } from "@/hooks/useUrlStyle";
 import { useIdentitySpace } from "@/hooks/useIdentitySpace";
 import { resolveLiveProfile } from "@/lib/live-profile";
@@ -825,8 +826,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
       {/* Compacte studiokop: tier-balk en tabs blijven bij het scrollen staan en
           nemen samen nauwelijks hoogte in, zodat de live preview hoger begint. */}
       {/* RIJ 1 — profielstatus & URL-balk */}
-      <div className="flex min-w-0 max-w-full flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card/50 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-        <div className="flex min-w-0 items-center gap-2">
+      <div className="flex min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border border-border bg-card/50 p-2 md:justify-between md:p-4">
+        <div className="hidden min-w-0 items-center gap-2 md:flex">
           <span
             className={cn(
               "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
@@ -877,7 +878,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
             />
           </button>
         </div>
-        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:flex-nowrap">
+        <div className="flex w-full min-w-0 flex-nowrap items-center gap-1.5 md:w-auto md:shrink-0 md:gap-2">
           <button
             type="button"
             onClick={undo}
@@ -898,18 +899,58 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
           >
             <Redo2 className="h-4 w-4" aria-hidden />
           </button>
+          <button
+            type="button"
+            onClick={openHandleEditor}
+            aria-label={t("studio.editor.editHandle")}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border hover:bg-muted md:hidden"
+          >
+            <Pencil className="h-4 w-4" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              void navigator.clipboard.writeText(
+                live.url ?? `https://rout.be${styledProfilePath(normalized || "handle", urlStyle)}`,
+              );
+              toast.success(t("studio.editor.copied"));
+            }}
+            aria-label={t("studio.editor.copy")}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border hover:bg-muted md:hidden"
+          >
+            <Copy className="h-4 w-4" aria-hidden />
+          </button>
           <a
             href={publicPath}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-border px-3 text-xs font-medium transition-colors hover:bg-muted"
+            className="hidden h-9 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-border px-3 text-xs font-medium transition-colors hover:bg-muted md:inline-flex"
           >
             <Eye className="h-3.5 w-3.5" aria-hidden /> <span className="hidden min-[400px]:inline sm:inline">{t("studio.editor.view")}</span><span className="min-[400px]:hidden sm:hidden">{t("studio.editor.viewShort")}</span>
           </a>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-label={t("studio.editor.discard")}
+                disabled={discarding || publishing || saving || draftRevision === publishedRevision}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border transition-colors hover:bg-muted disabled:opacity-40 md:hidden"
+              >
+                {discarding ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Trash2 className="h-4 w-4" aria-hidden />}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-60 space-y-3 p-3">
+              <p className="text-sm">{t("studio.editor.discardConfirm")}</p>
+              <Button type="button" size="sm" variant="destructive" className="w-full" onClick={() => void discard()}>
+                {t("studio.editor.discard")}
+              </Button>
+            </PopoverContent>
+          </Popover>
           <Button
             type="button"
             variant="outline"
             size="sm"
+            className="hidden md:inline-flex"
             disabled={discarding || publishing || saving || draftRevision === publishedRevision}
             onClick={() => void discard()}
           >
@@ -919,6 +960,7 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
           <Button
             type="button"
             size="sm"
+            className="ml-auto md:ml-0"
             data-tour="studio-publish"
             disabled={publishing || discarding || saving || dirty || draftRevision === publishedRevision}
             onClick={() => void publish()}

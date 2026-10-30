@@ -538,5 +538,6 @@
   "booking.done.cancelled": "This booking was cancelled or expired.",
   "booking.done.ics": "Add to my calendar (.ics)",
   "booking.widget.showSlots": "Show the next 3 available times",
-  "studio.nav.booking": "Bookings"
+  "studio.nav.booking": "Bookings",
+  "studio.editor.discardConfirm": "Discard all unpublished changes?"
 }

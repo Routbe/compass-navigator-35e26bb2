@@ -52,7 +52,7 @@ function assertPassword(password: string) {
 
 export async function findUserByEmail(email: string): Promise<Row | null> {
   const rows = (await sql`
-    select ${sql.unsafe(USER_COLUMNS)}, password_hash, is_disabled
+    select ${sql.unsafe(USER_COLUMNS)}, is_disabled
       from public.users where email_normalized = ${email.trim().toLowerCase()} limit 1
   `) as Row[];
   return rows[0] ?? null;
@@ -77,14 +77,18 @@ export async function createUser(input: {
   if (await findUserByEmail(email))
     throw new AuthError("email_taken", "This e-mail is already registered.");
 
-  const passwordHash = input.password ? await hashPassword(input.password) : null;
   const rows = (await sql`
-    insert into public.users (email, password_hash, user_metadata, email_confirmed_at)
-    values (${email}, ${passwordHash}, ${JSON.stringify(input.metadata ?? {})},
+    insert into public.users (email, user_metadata, email_confirmed_at)
+    values (${email}, ${JSON.stringify(input.metadata ?? {})},
             ${input.emailConfirmed ? new Date().toISOString() : null})
     returning ${sql.unsafe(USER_COLUMNS)}
   `) as Row[];
   const created = toSessionUser(rows[0]!);
+  // Passwords live only in Better Auth (neon_auth.account, providerId 'credential').
+  if (input.password) {
+    const { writePassword } = await import("@/lib/security-code.server");
+    await writePassword(created.id, input.password);
+  }
   const { ensureOwnerAdmin } = await import("./owner-admin.server");
   await ensureOwnerAdmin(created.id, email);
   return created;
@@ -104,8 +108,8 @@ export async function updateUserMetadata(userId: string, patch: Record<string, u
 
 export async function changePassword(userId: string, newPassword: string) {
   assertPassword(newPassword);
-  const hash = await hashPassword(newPassword);
-  await sql`update public.users set password_hash = ${hash}, updated_at = now() where id = ${userId}`;
+  const { writePassword } = await import("@/lib/security-code.server");
+  if (!(await writePassword(userId, newPassword))) throw new AuthError("not_found");
 }
 
 export async function changeEmail(userId: string, newEmail: string) {

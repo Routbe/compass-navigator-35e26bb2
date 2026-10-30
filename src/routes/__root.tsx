@@ -1,3 +1,4 @@
+import { StepUpDialog } from "@/components/auth/StepUpDialog";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -204,6 +205,7 @@ function RootComponent() {
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <StepUpDialog />
             <AuthProvider>
               <LanguageSync />
               <ErrorBoundary>

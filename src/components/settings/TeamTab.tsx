@@ -1,3 +1,4 @@
+import { withStepUp } from "@/components/auth/StepUpDialog";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -26,7 +27,7 @@ export function TeamTab({ workspaceId, workspaceName }: { workspaceId: string; w
   const run = async (fn: () => Promise<unknown>, ok: string) => {
     setBusy(true);
     try {
-      await fn();
+      await withStepUp(fn);
       toast.success(ok);
       await qc.invalidateQueries({ queryKey: key });
     } catch (e) {

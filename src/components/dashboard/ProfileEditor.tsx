@@ -64,6 +64,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEditorHistory } from "@/hooks/useEditorHistory";
 import { Undo2, Redo2, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverClose } from "@radix-ui/react-popover";
 import { useUrlStyle } from "@/hooks/useUrlStyle";
 import { useIdentitySpace } from "@/hooks/useIdentitySpace";
 import { resolveLiveProfile } from "@/lib/live-profile";
@@ -941,9 +942,14 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
             </PopoverTrigger>
             <PopoverContent align="end" className="w-60 space-y-3 p-3">
               <p className="text-sm">{t("studio.editor.discardConfirm")}</p>
-              <Button type="button" size="sm" variant="destructive" className="w-full" onClick={() => void discard()}>
-                {t("studio.editor.discard")}
-              </Button>
+              <div className="flex gap-2">
+                <Button type="button" size="sm" variant="destructive" className="flex-1" onClick={() => void discard()}>
+                  Ja, wis
+                </Button>
+                <PopoverClose asChild>
+                  <Button type="button" size="sm" variant="outline" className="flex-1">Annuleer</Button>
+                </PopoverClose>
+              </div>
             </PopoverContent>
           </Popover>
           <Button

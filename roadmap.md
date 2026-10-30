@@ -67,6 +67,8 @@
 - [x] /studio/account als globale pagina, /settings verwijst door, ontwerpsjablonen naar Studio Vormgeving
 - [ ] Dashboard-performance: blauwdruk wacht op goedkeuring (/mnt/documents/ROUT-Dashboard-Performance-Blueprint.md)
 - [x] password_hash: code op Better Auth, db/0124 drop-migratie geschreven
-- [ ] db/0124 op Neon uitvoeren, CREATE intrekken, NOBYPASSRLS voor rout_app — wacht op databaseverbinding in dit project
+- [x] Neon gekoppeld; rout_app heeft al geen CREATE; db/0124 (10 oude wachtwoorden naar Better Auth) toegepast
+- [ ] db/0125 kolom droppen — wacht tot rout.be (Vercel) de nieuwe code draait
+- [ ] NOBYPASSRLS — wacht op per-request rout.user_id in neon.ts + RLS op users/workspaces e.a. (29 tabellen)
 - [ ] Signing keys verzegelen op Vercel — wacht op ROUT_PROVIDER_SIGNING_KEK in productie
 - [x] Mobiele Studio-kop compact (<120px): profielkeuze als pill, URL/Profiel-knop verbergen, Verwerpen als prullenbak met bevestiging, één knoppenrij

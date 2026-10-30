@@ -63,3 +63,4 @@
 - Credential hashes are verified only via `src/lib/auth/credential-hash.server.ts` (Better Auth scrypt + migrated legacy pbkdf2$). Why: users moved from the dropped legacy column keep their password.
 - Authenticated server functions run inside `withDbContext` (src/lib/neon.ts), so each query is a transaction that first sets `rout.user_id`/`rout.workspace_id`; RLS never trusts `rout.workspace_id`. Why: RLS can only be enforced when the database knows the caller.
 - Profile glass/scoped styling comes only from pure `src/lib/theme-engine.ts` (global `glass*` prefs + `themeOverrides[scope]`). Why: one rule for the Studio controls and the public page.
+- Security events are written only via `recordSecurityEvent` (audit-log.server.ts) into append-only, DB-hash-chained `security_audit_logs` (db/0127); rules in pure audit-chain.ts. Why: tampering must be provable.

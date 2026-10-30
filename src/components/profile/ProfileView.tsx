@@ -602,7 +602,7 @@ export function ProfileView({
             ) : b.kind === "widget:youtube" ? (
               profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileYouTubeCard handle={profile.username} theme={t} /></div> : null
             ) : b.kind === "live" ? (
-              profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileIntegrations handle={profile.username} theme={t} styleFor(b.kind)={styleFor(b.kind)} provider={b.value} stats={b.stats} /></div> : null
+              profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileIntegrations handle={profile.username} theme={t} buttonStyle={styleFor(b.kind)} provider={b.value} stats={b.stats} /></div> : null
             ) : b.kind === "widget:reach" ? (
               profile.show_total_reach && (profile.total_reach_count ?? 0) > 0 ? <div key={b.id} className="flex w-full items-center justify-center gap-1.5 text-sm lg:col-span-full"><Users className="h-4 w-4" aria-hidden />{formatReach(profile.total_reach_count ?? 0)}  {tx("profile.reachLabel")} </div> : null
             ) : b.kind === "spacer" ? (

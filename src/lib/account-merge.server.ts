@@ -1,5 +1,5 @@
 import { sql } from "@/lib/neon";
-import { generateToken, hashToken, verifyPassword } from "@/lib/auth/password.server";
+import { generateToken, hashToken } from "@/lib/auth/password.server";
 
 /**
  * Sovereign account merge.

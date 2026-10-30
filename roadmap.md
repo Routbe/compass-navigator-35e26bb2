@@ -66,3 +66,6 @@
 - [x] Profielmenu context-bewust (badge + plan, workspace-links, Account & Beveiliging onderaan)
 - [x] /studio/account als globale pagina, /settings verwijst door, ontwerpsjablonen naar Studio Vormgeving
 - [ ] Dashboard-performance: blauwdruk wacht op goedkeuring (/mnt/documents/ROUT-Dashboard-Performance-Blueprint.md)
+- [x] password_hash: code op Better Auth, db/0124 drop-migratie geschreven
+- [ ] db/0124 op Neon uitvoeren, CREATE intrekken, NOBYPASSRLS voor rout_app — wacht op databaseverbinding in dit project
+- [ ] Signing keys verzegelen op Vercel — wacht op ROUT_PROVIDER_SIGNING_KEK in productie

@@ -8,6 +8,13 @@ export const Route = createFileRoute("/api_/user/vault/export")({
         const { currentUser } = await import("@/lib/auth/session.server");
         const user = await currentUser().catch(() => null);
         if (!user) return new Response("Unauthorized", { status: 401 });
+        const { ensureStepUpSession, StepUpRequiredError } = await import("@/lib/auth/step-up.server");
+        try {
+          await ensureStepUpSession(user.id, "vault_export");
+        } catch (e) {
+          if (e instanceof StepUpRequiredError) return new Response("Step-Up Required", { status: 401 });
+          throw e;
+        }
         const { hitRateLimit } = await import("@/lib/rate-limit-db.server");
         const limit = await hitRateLimit("vault-export", user.id, { limit: 5, windowSec: 3600 });
         if (!limit.ok) return new Response("Too many exports, try again later", { status: 429 });

@@ -111,6 +111,8 @@ export const changeMemberRole = createServerFn({ method: "POST" })
     const { sql } = await import("@/lib/neon");
     const { assertWorkspaceRole, getWorkspaceRole, countOwners } = await import("./workspaces.server");
     const actor = await assertWorkspaceRole(context.userId, data.workspaceId, ["owner", "admin"]);
+    const { ensureStepUpSession } = await import("@/lib/auth/step-up.server");
+    await ensureStepUpSession(context.userId, "workspace_role");
     const target = await getWorkspaceRole(data.userId, data.workspaceId);
     if (!target) throw new Error("Dit lid bestaat niet meer.");
     const err = checkMemberChange(actor, { kind: "role", targetRole: target, nextRole: data.role }, await countOwners(data.workspaceId));
@@ -127,6 +129,8 @@ export const removeMember = createServerFn({ method: "POST" })
     const { sql } = await import("@/lib/neon");
     const { assertWorkspaceRole, getWorkspaceRole, countOwners } = await import("./workspaces.server");
     const actor = await assertWorkspaceRole(context.userId, data.workspaceId, ["owner", "admin"]);
+    const { ensureStepUpSession } = await import("@/lib/auth/step-up.server");
+    await ensureStepUpSession(context.userId, "workspace_role");
     const target = await getWorkspaceRole(data.userId, data.workspaceId);
     if (!target) return { ok: true as const };
     const err = checkMemberChange(actor, { kind: "remove", targetRole: target }, await countOwners(data.workspaceId));

@@ -1,3 +1,4 @@
+import { glassSurfaceStyle, resolveScopedTokens, scopeOfBlockKind } from "@/lib/theme-engine";
 import { LocaleDropdown } from "@/components/LocaleDropdown";
 import { profileSurface } from "@/lib/profile-surface";
 import { profileImageSrc } from "@/lib/image-proxy-rules";
@@ -163,6 +164,16 @@ export function ProfileView({
   };
   const fonts = fontPairingOf(prefs.fontPairing);
   const buttonStyle = designButtonStyle(prefs, t) ?? blockButtonStyle(profile.card_style, t);
+  /** Scoped theme engine: global glass tokens + per-component overrides. */
+  const styleFor = (kind: string) => {
+    const scope = scopeOfBlockKind(kind);
+    const glass = glassSurfaceStyle(
+      resolveScopedTokens(prefs, prefs.themeOverrides, scope),
+      scope,
+      prefs.glassTargets,
+    );
+    return glass ? { ...(buttonStyle ?? {}), ...glass } : buttonStyle;
+  };
   const iconOnly = (prefs.buttonsCustom || prefs.customDesign) && prefs.buttonShape === "icon";
   /** Eigen canvas- en patroonkleuren overschrijven het thema, indien gekozen. */
   const canvas = {
@@ -424,10 +435,10 @@ export function ProfileView({
           <ProfilePassport handle={profile.username} theme={t} compact />
         </h1>
         {profile.username && <ProfilePageTabs handle={profile.username} theme={t} />}
-        {profile.username && <SnapchatProfile handle={profile.username} theme={t} buttonStyle={buttonStyle} ownerName={profile.display_name || profile.username} />}
+        {profile.username && <SnapchatProfile handle={profile.username} theme={t} buttonStyle={styleFor("live")} ownerName={profile.display_name || profile.username} />}
         {profile.username && <CustomStatusPill handle={profile.username} theme={t} />}
         {profile.username && <NowPlaying handle={profile.username} theme={t} />}
-        {profile.username && <ProfileIntegrations handle={profile.username} theme={t} buttonStyle={buttonStyle} exclude={liveProviders} />}
+        {profile.username && <ProfileIntegrations handle={profile.username} theme={t} buttonStyle={styleFor("live")} exclude={liveProviders} />}
         {profile.username && usesSectionFallback(profile.blocks, "widget:youtube") && <ProfileYouTubeCard handle={profile.username} theme={t} />}
         {profile.username && <TipJarButton handle={profile.username} theme={t} />}
         <ProfilePassport handle={profile.username} theme={t} />
@@ -591,7 +602,7 @@ export function ProfileView({
             ) : b.kind === "widget:youtube" ? (
               profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileYouTubeCard handle={profile.username} theme={t} /></div> : null
             ) : b.kind === "live" ? (
-              profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileIntegrations handle={profile.username} theme={t} buttonStyle={buttonStyle} provider={b.value} stats={b.stats} /></div> : null
+              profile.username ? <div key={b.id} className="w-full lg:col-span-full"><ProfileIntegrations handle={profile.username} theme={t} styleFor(b.kind)={styleFor(b.kind)} provider={b.value} stats={b.stats} /></div> : null
             ) : b.kind === "widget:reach" ? (
               profile.show_total_reach && (profile.total_reach_count ?? 0) > 0 ? <div key={b.id} className="flex w-full items-center justify-center gap-1.5 text-sm lg:col-span-full"><Users className="h-4 w-4" aria-hidden />{formatReach(profile.total_reach_count ?? 0)}  {tx("profile.reachLabel")} </div> : null
             ) : b.kind === "spacer" ? (
@@ -611,35 +622,35 @@ export function ProfileView({
                 label={b.label}
                 badge={b.badge}
                 expiresAt={b.expiresAt}
-                style={buttonStyle}
+                style={styleFor(b.kind)}
                 accent={t.accent ?? t.border ?? "currentColor"}
               />
             ) : isWidgetBlock(b.kind) || isBookingUrl(blockHref(b)) ? (
               b.kind === "media_gallery" ? (
-                <GalleryCard key={b.id} config={parseGalleryConfig(b.value)} style={buttonStyle} />
+                <GalleryCard key={b.id} config={parseGalleryConfig(b.value)} style={styleFor(b.kind)} />
               ) : b.kind === "social_feed" ? (
-                <SocialFeedCard key={b.id} value={b.value} style={buttonStyle} />
+                <SocialFeedCard key={b.id} value={b.value} style={styleFor(b.kind)} />
               ) : b.kind === "media_embed" ? (
-                <MediaEmbedCard key={b.id} value={b.value} style={buttonStyle} />
+                <MediaEmbedCard key={b.id} value={b.value} style={styleFor(b.kind)} />
               ) : b.kind === "contact_form" ? (
                 <ContactFormCard
                   key={b.id}
                   handle={profile.username ?? ""}
                   config={parseContactFormConfig(b.value)}
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 />
               ) : b.kind === "event_list" ? (
                 <EventListCard
                   key={b.id}
                   config={parseEventListConfig(b.value)}
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 />
               ) : b.kind === "live_poll" ? (
                 <PollCard
                   key={b.id}
                   pollKey={`${profile.username ?? "anon"}:${b.id}`}
                   config={parsePollConfig(b.value)}
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 />
               ) : b.kind === "vcard" ? (
                 <button
@@ -668,31 +679,31 @@ export function ProfileView({
                     });
                   }}
                   className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-transform hover:-translate-y-px"
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 >
                   <UserPlus className="h-4 w-4" aria-hidden />
                   {parseVCardConfig(b.value).label.trim() || profileText(locale, "saveContact")}
                 </button>
               ) : b.kind === "faq_accordion" ? (
-                <FaqCard key={b.id} config={parseFaqConfig(b.value)} style={buttonStyle} />
+                <FaqCard key={b.id} config={parseFaqConfig(b.value)} style={styleFor(b.kind)} />
               ) : b.kind === "map_embed" ? (
-                <MapCard key={b.id} config={parseMapConfig(b.value)} style={buttonStyle} />
+                <MapCard key={b.id} config={parseMapConfig(b.value)} style={styleFor(b.kind)} />
               ) : b.kind === "booking_request" ? (
                 <BookingCard
                   key={b.id}
                   handle={profile.username ?? ""}
                   config={parseBookingConfig(b.value)}
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 />
               ) : b.kind === "newsletter" ? (
                 <NewsletterBlock
                   key={b.id}
                   handle={profile.username ?? ""}
                   label={b.label}
-                  style={buttonStyle}
+                  style={styleFor(b.kind)}
                 />
               ) : (
-                <BookingBlock key={b.id} href={blockHref(b)} label={b.label} style={buttonStyle} />
+                <BookingBlock key={b.id} href={blockHref(b)} label={b.label} style={styleFor(b.kind)} />
               )
             ) : (
               <a
@@ -710,7 +721,7 @@ export function ProfileView({
                   buttonEffectClass(prefs.buttonEffect),
                   ctaClass(b.id),
                 )}
-                style={{ ...buttonStyle, ...blockStyleOverride(layers.blockStyles[b.id]), ...(iconOnly ? { borderRadius: 999, padding: 0, minHeight: 0 } : null) }}
+                style={{ ...styleFor(b.kind), ...blockStyleOverride(layers.blockStyles[b.id]), ...(iconOnly ? { borderRadius: 999, padding: 0, minHeight: 0 } : null) }}
               >
                 {b.thumbnailUrl ? (
                   <img

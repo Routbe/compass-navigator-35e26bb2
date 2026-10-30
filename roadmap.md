@@ -81,7 +81,7 @@
 - [x] Vormgeving: glasstijlen (solide, frosted, obsidian, prism) + sliders + toepassen-op + fallback
 
 ## RFC-002 + UI-batch (30/10, 17:48)
-- [ ] F1 hash-chained security_audit_logs (db/0127) + append-only trigger + HMAC checkpoint-cron (365d retentie, checkpoints permanent)
+- [x] F1 hash-chained security_audit_logs (db/0127) + append-only trigger + HMAC checkpoint-cron (365d retentie, checkpoints permanent)
 - [ ] F2 ensureStepUpSession (120s, passkey/TOTP, e-mail alleen als fallback) op vault export, account delete, client secrets, teamrollen + modal + tests
 - [ ] F3 sliding-window rate limiter (Neon) op publieke endpoints + CSP publieke profielen
 - [ ] F4 X-Rout-Signature webhooks + retry-queue; client_credentials (15 min)

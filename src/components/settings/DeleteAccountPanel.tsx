@@ -1,3 +1,4 @@
+import { withStepUp } from "@/components/auth/StepUpDialog";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -27,7 +28,7 @@ export function DeleteAccountPanel() {
   async function run(fn: () => Promise<unknown>, ok: string) {
     setBusy(true);
     try {
-      await fn();
+      await withStepUp(fn);
       toast.success(ok);
       setOpen(false);
       setCode("");

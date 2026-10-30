@@ -1,3 +1,4 @@
+import { withStepUp } from "@/components/auth/StepUpDialog";
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -16,7 +17,7 @@ export function DataExportCard() {
   async function download() {
     setBusy(true);
     try {
-      const payload = await exportData({});
+      const payload = await withStepUp(() => exportData({}));
       const blob = new Blob([JSON.stringify(payload, null, 2)], {
         type: "application/json",
       });
@@ -57,11 +58,33 @@ export function DataExportCard() {
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
           JSON
         </Button>
-        <Button asChild variant="outline" size="sm" className="gap-2">
-          <a href="/api/user/vault/export" download>
-            <Download className="h-4 w-4" />
-            Volledige kluis (ZIP)
-          </a>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={async () => {
+            const go = async () => {
+              const res = await fetch("/api/user/vault/export", { credentials: "same-origin" });
+              if (res.status === 401 && (await res.clone().text()).includes("Step-Up")) throw new Error("STEP_UP_REQUIRED");
+              if (!res.ok) throw new Error(await res.text());
+              return res.blob();
+            };
+            try {
+              const blob = await withStepUp(go);
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `rout-vault-${new Date().toISOString().slice(0, 10)}.zip`;
+              a.click();
+              URL.revokeObjectURL(url);
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Export mislukt.");
+            }
+          }}
+        >
+          <Download className="h-4 w-4" />
+          Volledige kluis (ZIP)
         </Button>
       </div>
     </div>

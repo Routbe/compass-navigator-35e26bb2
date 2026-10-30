@@ -148,6 +148,8 @@ export const rotateOAuthSecret = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
+    const { ensureStepUpSession } = await import("@/lib/auth/step-up.server");
+    await ensureStepUpSession(context.userId, "oauth_secret");
     const { rotateClientSecret } = await import("./provider.server");
     return friendly(async () => {
       const clientSecret = await rotateClientSecret(context.userId, data.id);

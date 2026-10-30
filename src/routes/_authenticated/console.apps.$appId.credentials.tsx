@@ -1,3 +1,4 @@
+import { withStepUp } from "@/components/auth/StepUpDialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -74,7 +75,7 @@ function CredentialsPage() {
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={async () => {
                     setBusy(true);
-                    try { setSecret((await rotate({ data: { id: app.id } })).clientSecret); }
+                    try { setSecret((await withStepUp(() => rotate({ data: { id: app.id } }))).clientSecret); }
                     catch (e) { toast.error(errorText(e, "Vernieuwen mislukt.")); }
                     finally { setBusy(false); }
                   }}

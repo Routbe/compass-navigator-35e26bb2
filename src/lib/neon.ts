@@ -12,7 +12,24 @@
  * `sql.transaction([...])`. One call = one HTTP request (no session state).
  */
 
+import { AsyncLocalStorage } from "node:async_hooks";
 import { neon as neonHttp, neonConfig, Pool } from "@neondatabase/serverless";
+import { contextStatements, type DbContext } from "@/lib/db-context";
+
+/**
+ * Request-scoped RLS context. Auth middleware runs handlers inside
+ * `withDbContext`, and every query then runs in a transaction that first sets
+ * `rout.user_id` / `rout.workspace_id` with `set_config(..., true)` (= SET LOCAL).
+ * Without a context (anonymous, cron) nothing is set, so both read as null.
+ */
+const dbContext = new AsyncLocalStorage<DbContext>();
+export function withDbContext<T>(ctx: DbContext, fn: () => T): T {
+  return dbContext.run(ctx, fn);
+}
+function activeContext(): Statement[] {
+  const ctx = dbContext.getStore();
+  return ctx ? contextStatements(ctx) : [];
+}
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/neon/sql";
 
@@ -120,6 +137,11 @@ function normaliseParams(params: unknown[]): unknown[] {
 }
 
 export async function runQuery(query: string, params: unknown[] = []): Promise<GatewayResult> {
+  const prefix = activeContext();
+  if (prefix.length) {
+    const results = await runBatch([...prefix, { query, params }], { withContext: false });
+    return results[results.length - 1]!;
+  }
   const client = direct();
   if (client) {
     const result = (await client.query(query, normaliseParams(params))) as unknown as GatewayResult & {
@@ -130,7 +152,17 @@ export async function runQuery(query: string, params: unknown[] = []): Promise<G
   return (await post({ query, params: normaliseParams(params) })) as GatewayResult;
 }
 
-export async function runBatch(statements: Statement[]): Promise<GatewayResult[]> {
+export async function runBatch(
+  input: Statement[],
+  opts: { withContext?: boolean } = {},
+): Promise<GatewayResult[]> {
+  const prefix = opts.withContext === false ? [] : activeContext();
+  const statements = [...prefix, ...input];
+  const all = await runStatements(statements);
+  return all.slice(prefix.length);
+}
+
+async function runStatements(statements: Statement[]): Promise<GatewayResult[]> {
   const tx = pool();
   if (tx) {
     await ensureWebSocket();

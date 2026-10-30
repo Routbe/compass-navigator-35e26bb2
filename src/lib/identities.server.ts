@@ -142,10 +142,6 @@ export async function listIdentities(userId: string): Promise<IdentityRow[]> {
 }
 
 export async function hasPassword(userId: string): Promise<boolean> {
-  const rows = (await sql`
-    select password_hash is not null as has_password from public.users where id = ${userId} limit 1
-  `) as Row[];
-  if (rows[0]?.["has_password"] === true) return true;
   return (await listBetterAuth(userId)).some((a) => a.providerId === "credential");
 }
 

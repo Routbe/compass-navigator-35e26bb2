@@ -15817,14 +15817,6 @@
           "generated": "lower(email)"
         },
         {
-          "name": "password_hash",
-          "type": "text",
-          "notNull": false,
-          "default": null,
-          "identity": null,
-          "generated": null
-        },
-        {
           "name": "email_confirmed_at",
           "type": "timestamp with time zone",
           "notNull": false,

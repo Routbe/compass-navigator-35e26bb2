@@ -262,7 +262,7 @@ export async function scrubSunsetAccounts(): Promise<{ scrubbed: number }> {
     await sql.transaction([
       sql`delete from public.user_sessions where user_id = ${u.id}`,
       sql`delete from public.auth_tokens where user_id = ${u.id}`,
-      sql`update public.users set email = ${`${u.id}@retired.invalid`}, password_hash = null, is_disabled = true,
+      sql`update public.users set email = ${`${u.id}@retired.invalid`}, is_disabled = true,
           account_status = 'retired', user_metadata = user_metadata - 'neon_auth_id', updated_at = now() where id = ${u.id}`,
     ]);
   }

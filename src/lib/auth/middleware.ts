@@ -22,7 +22,11 @@ export const requireAuth = createMiddleware({ type: "function" }).server(async (
     email_confirmed_at: user.emailConfirmedAt,
     email_verified: Boolean(user.emailConfirmedAt),
   };
-  return next({ context: { userId: user.id, user, claims, db } });
+  const { withDbContext } = await import("@/lib/neon");
+  const workspaceId = await activeWorkspaceCookie();
+  return withDbContext({ userId: user.id, workspaceId }, () =>
+    next({ context: { userId: user.id, user, claims, db } }),
+  );
 });
 
 /** Same lookup, but anonymous callers are allowed through with `userId: null`. */
@@ -39,5 +43,21 @@ export const optionalAuth = createMiddleware({ type: "function" }).server(async 
         email_verified: Boolean(user.emailConfirmedAt),
       }
     : null;
-  return next({ context: { userId: user?.id ?? null, user, claims, db } });
+  if (!user) return next({ context: { userId: null, user, claims, db } });
+  const { withDbContext } = await import("@/lib/neon");
+  const workspaceId = await activeWorkspaceCookie();
+  return withDbContext({ userId: user.id, workspaceId }, () =>
+    next({ context: { userId: user.id, user, claims, db } }),
+  );
 });
+
+/** Informational only: RLS policies never trust it, membership is always checked. */
+async function activeWorkspaceCookie(): Promise<string | null> {
+  try {
+    const { getCookie } = await import("@tanstack/react-start/server");
+    const { ACTIVE_WORKSPACE_COOKIE } = await import("@/lib/workspaces.server");
+    return getCookie(ACTIVE_WORKSPACE_COOKIE) ?? null;
+  } catch {
+    return null;
+  }
+}

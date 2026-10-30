@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { betterAuth } from "better-auth";
+import { hashCredential, verifyCredentialHash } from "@/lib/auth/credential-hash.server";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import { twoFactor } from "better-auth/plugins/two-factor";
@@ -328,7 +329,13 @@ export function createRoutAuth(request?: Request) {
         },
       },
     },
-    emailAndPassword: { enabled: true, minPasswordLength: 10, autoSignIn: true },
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 10,
+      autoSignIn: true,
+      // Accepts migrated legacy pbkdf2$ hashes (db/0124) next to Better Auth scrypt.
+      password: { hash: hashCredential, verify: verifyCredentialHash },
+    },
     socialProviders: socialProviders as never,
     plugins: plugins as never,
     trustedOrigins: [

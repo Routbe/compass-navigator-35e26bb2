@@ -89,8 +89,8 @@ export async function hasPassword(userId: string): Promise<boolean> {
 export async function checkPassword(userId: string, password: string): Promise<boolean> {
   const { hash } = await credentialHash(userId);
   if (!hash || !password) return false;
-  const { verifyPassword } = await import("better-auth/crypto");
-  return verifyPassword({ hash, password }).catch(() => false);
+  const { verifyCredentialHash } = await import("@/lib/auth/credential-hash.server");
+  return verifyCredentialHash({ hash, password });
 }
 
 export async function writePassword(userId: string, newPassword: string): Promise<boolean> {
